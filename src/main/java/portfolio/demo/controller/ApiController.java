@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import portfolio.demo.service.NewsCacheService;
 import portfolio.demo.service.NewsService;
 
 @RestController
@@ -13,6 +14,9 @@ public class ApiController {
 
     @Autowired
     private NewsService newsService;
+
+    @Autowired
+    private NewsCacheService newsCacheService;
 
     @GetMapping("/public")
     public String getMessage() {
