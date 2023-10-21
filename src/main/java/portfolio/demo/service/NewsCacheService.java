@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 public class NewsCacheService {
 
     private static final String CACHE_KEY = "news_data";
-    private static final int expirationSeconds = 120;
+    private static final int expirationSeconds = 1800;
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;

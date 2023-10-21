@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class NewsService {
@@ -15,24 +16,32 @@ public class NewsService {
     @Value("${news.api.key}")
     private String apiKey;
 
-    private final String NEWS_API_URL = "https://newsapi.org/v2/top-headlines?country=us&apiKey=";
+    private final String NEWS_API_URL = "https://newsapi.org/v2/top-headlines";
+    private RestTemplate restTemplate = new RestTemplate();
 
     @Autowired
     private NewsCacheService newsCacheService;
 
+    private String buildNewsApiUrl() {
+        return UriComponentsBuilder.fromHttpUrl(NEWS_API_URL)
+                .queryParam("country", "us")
+                .queryParam("apiKey", this.apiKey)
+                .queryParam("pageSize", 100)
+                .toUriString();
+    }
+
     public String getNews() {
+        String finalNewsUrl = buildNewsApiUrl();
         // Check if news data is in the cache
+
         String cachedNews = newsCacheService.getNews();
-        logger.info(cachedNews);
 
         if(cachedNews != null) {
             logger.info("Found and returned in cache");
             return cachedNews;
         } else {
-            RestTemplate restTemplate = new RestTemplate();
-            String newsData = restTemplate.getForObject(NEWS_API_URL + apiKey, String.class);
+            String newsData = restTemplate.getForObject(finalNewsUrl, String.class);
             newsCacheService.cacheNews(newsData);
-
             logger.info("No cache found, created new cache");
             return newsData;
         }
